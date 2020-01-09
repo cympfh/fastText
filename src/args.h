@@ -35,6 +35,8 @@ class Args {
   int lrUpdateRate;
   int dim;
   int ws;
+  int wsLeft;
+  int wsRight;
   int epoch;
   int minCount;
   int minCountLabel;

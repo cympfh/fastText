@@ -375,11 +375,13 @@ void FastText::cbow(
     real lr,
     const std::vector<int32_t>& line) {
   std::vector<int32_t> bow;
-  std::uniform_int_distribution<> uniform(1, args_->ws);
+  std::uniform_int_distribution<> uniform_left(1, args_->wsLeft >= 0 ? args_->wsLeft :args_->ws);
+  std::uniform_int_distribution<> uniform_right(1, args_->wsRight >= 0 ? args_->wsRight :args_->ws);
   for (int32_t w = 0; w < line.size(); w++) {
-    int32_t boundary = uniform(state.rng);
+    int32_t left = uniform_left(state.rng);
+    int32_t right = uniform_right(state.rng);
     bow.clear();
-    for (int32_t c = -boundary; c <= boundary; c++) {
+    for (int32_t c = -left; c <= right; c++) {
       if (c != 0 && w + c >= 0 && w + c < line.size()) {
         const std::vector<int32_t>& ngrams = dict_->getSubwords(line[w + c]);
         bow.insert(bow.end(), ngrams.cbegin(), ngrams.cend());
@@ -393,11 +395,17 @@ void FastText::skipgram(
     Model::State& state,
     real lr,
     const std::vector<int32_t>& line) {
-  std::uniform_int_distribution<> uniform(1, args_->ws);
+  std::uniform_int_distribution<> uniform_left(
+      args_->wsLeft == 0 ? 0 : 1,
+      args_->wsLeft >= 0 ? args_->wsLeft : args_->ws);
+  std::uniform_int_distribution<> uniform_right(
+      args_->wsRight == 0 ? 0 : 1,
+      args_->wsRight >= 0 ? args_->wsRight : args_->ws);
   for (int32_t w = 0; w < line.size(); w++) {
-    int32_t boundary = uniform(state.rng);
+    int32_t left = uniform_left(state.rng);
+    int32_t right = uniform_right(state.rng);
     const std::vector<int32_t>& ngrams = dict_->getSubwords(line[w]);
-    for (int32_t c = -boundary; c <= boundary; c++) {
+    for (int32_t c = -left; c <= right; c++) {
       if (c != 0 && w + c >= 0 && w + c < line.size()) {
         model_->update(ngrams, line, w + c, lr, state);
       }

@@ -20,6 +20,8 @@ Args::Args() {
   lr = 0.05;
   dim = 100;
   ws = 5;
+  wsLeft = -1;
+  wsRight = -1;
   epoch = 5;
   minCount = 5;
   minCountLabel = 0;
@@ -133,6 +135,10 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         dim = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-ws") {
         ws = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-ws-left") {
+        wsLeft = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-ws-right") {
+        wsRight = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-epoch") {
         epoch = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-minCount") {
@@ -266,6 +272,8 @@ void Args::printTrainingHelp() {
       << lrUpdateRate << "]\n"
       << "  -dim                size of word vectors [" << dim << "]\n"
       << "  -ws                 size of the context window [" << ws << "]\n"
+      << "  -ws-left            size of the LEFT context window [" << wsLeft << "] (if < 0, ws)\n"
+      << "  -ws-right           size of the RIGHT context window [" << wsRight << "] (if < 0, ws)\n"
       << "  -epoch              number of epochs [" << epoch << "]\n"
       << "  -neg                number of negatives sampled [" << neg << "]\n"
       << "  -loss               loss function {ns, hs, softmax, one-vs-all} ["
@@ -344,6 +352,10 @@ void Args::dump(std::ostream& out) const {
       << " " << dim << std::endl;
   out << "ws"
       << " " << ws << std::endl;
+  out << "wsLeft"
+      << " " << wsLeft << std::endl;
+  out << "wsRight"
+      << " " << wsRight << std::endl;
   out << "epoch"
       << " " << epoch << std::endl;
   out << "minCount"
